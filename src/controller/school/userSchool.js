@@ -104,8 +104,75 @@ const loginSchool = async (req, res) => {
             error: "Internal server error",
         });
     }
-}
+};
 
+
+const updateSchool = async (req, res) => {
+    try {
+      const updateSchoolId = req.params.id;
+    
+  
+      // Check if the post exists
+      const schoolExits = await school.findById(updateSchoolId);
+  
+      if (!schoolExits) {
+        return res.status(404).json({
+          success: false,
+          message: 'School not found',
+          error: 'School with the provided ID does not exist'
+        });
+      }
+  
+      // Update post data
+    //   classExits.Name = req.body.Name;
+
+    schoolExits.name = req.body.name,
+    schoolExits.address = req.body.address,
+    schoolExits.email = req.body.email,
+    schoolExits.password = req.body.password,
+    schoolExits.contact = req.body.contact,
+    schoolExits.image = req.body.image,
+    schoolExits.isActive = req.body.isActive
+  
+      // Save the updated post
+      const updatedPost = await schoolExits.save();
+  
+      res.status(200).json({
+        success: true,
+        message: 'School updated successfully',
+       
+      });
+    } catch (error) {
+      console.error('Error updating school:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+        error: error.message
+      });
+    }
+};
+  
+
+// create getall api 
+
+const getAllschool = async (req, res) => {
+    try {
+      
+      // Retrieve all posts
+      const schooldata = await school.find();
+  
+      res.status(200).json({ 
+        success: true, 
+        message: 'All School Retrieved Successfully', 
+        schooldata });
+    } 
+    catch (error) {
+      res.status(500).json({ 
+        success: false,
+         message: 'Internal Server Error', 
+         error: error.message });
+    }
+};
 
 
 
@@ -114,4 +181,7 @@ const loginSchool = async (req, res) => {
 module.exports = {
     createSchool,
     loginSchool,
+    updateSchool,
+    getAllschool
+    
 };

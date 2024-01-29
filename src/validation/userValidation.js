@@ -8,7 +8,7 @@ const createUserSchema = Joi.object({
   contact: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
   image: Joi.string(),
   establishedYear: Joi.string(),
- isActive: Joi.boolean(),
+  isActive: Joi.boolean(),
 });
 
 

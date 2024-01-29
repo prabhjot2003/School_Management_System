@@ -65,8 +65,88 @@ const createStudent = async (req, res) => {
 };
 
 
+const updateStudent = async (req, res) => {
+    try {
+      const updateStudentId = req.params.id;
+    
+  
+      // Check if the post exists
+      const studentExits = await StudentSchema.findById(updateStudentId);
+  
+      if (!studentExits) {
+        return res.status(404).json({
+          success: false,
+          message: 'Student not found',
+          error: 'Student with the provided ID does not exist'
+        });
+      }
+  
+      // Update post data
+    //   classExits.Name = req.body.Name;
+
+    studentExits.Name = req.body.Name,
+    studentExits.firstName = req.body.firstName,
+    studentExits.lastName = req.body.lastName,
+    studentExits.age = req.body.age,
+    studentExits.dateOfBirth = req.body.dateOfBirth,
+    studentExits.email = req.body.email,
+    studentExits.phoneNo = req.body.phoneNo,
+    studentExits.gender = req.body.gender,
+    studentExits.fatherOccupation = req.body.fatherOccupation,
+    studentExits.motherOccupation = req.body.motherOccupation,
+    studentExits.classId = req.body.classId,
+    studentExits.sectionId = req.body.sectionId,
+    studentExits.schooId =req.body.schooId
+    
+    
+  
+      // Save the updated post
+      const updatedPost = await studentExits.save();
+  
+      res.status(200).json({
+        success: true,
+        message: 'Student updated successfully',
+       
+      });
+    } catch (error) {
+      console.error('Error updating Student:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+        error: error.message
+      });
+    }
+  };
+
+
+  const getAllstudent = async (req, res) => {
+    try {
+  
+      // Retrieve all posts
+      const schooldata = await StudentSchema.find();
+  
+      res.status(200).json({
+        success: true,
+        message: 'All Student Retrieved Successfully',
+        schooldata
+      });
+    }
+    catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+        error: error.message
+      });
+    }
+  };
+
+
+
+
 module.exports = {
     createStudent,
+    updateStudent,
+    getAllstudent 
 }
 
 

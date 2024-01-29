@@ -8,6 +8,10 @@ const jwt = require('jsonwebtoken');
 app.use(express.json());
 
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+
+
 
 // mongodb Connection
 
