@@ -9,6 +9,8 @@ router.post("/createStudent",studentRoute.createStudent)
 router.put("/updateStudent/:id", middleware,studentRoute.updateStudent);
 router.get("/getAllstudent",studentRoute.getAllstudent);
 
+router.get("/getAllcount/:id", middleware,studentRoute.getALLStudentdata);
+
 
 
 

@@ -9,6 +9,7 @@ router.post('/classCreate', classRoutes.classCreate);
 router.put('/updateClass/:id',middleware,classRoutes.updateClass);
 
 router.get('/getAllclass',classRoutes.getAllclass);
+router.get('/getAllclass/:id',middleware,classRoutes.getALLclassdata);
 
 module.exports = router;
 

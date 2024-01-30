@@ -136,6 +136,38 @@ const getAllclass = async (req, res) => {
 //   }
 // }
 
+const   getALLclassdata  = async (req, res) => {
+  try {
+    const schoolId = req.params.id
+    const schoolvalid = await school.findById({"_id" : schoolId});
+    if (!schoolvalid) {
+      return res.status(404).json({
+        status: false,
+        message: "school not found"
+      })
+    }
+    const data = await classSchema.aggregate([
+
+      {
+        '$count': 'number of in class'
+        
+      },
+
+    ]);
+
+    return res.status(200).json({
+      status: true,
+      data,
+    });
+
+  } catch (error) {
+    console.log("error:", error);
+    return res.status(500).json({
+      status: false,
+      message: 'Internal Server Error'
+    });      
+  }
+}
 
 
 
@@ -147,7 +179,8 @@ const getAllclass = async (req, res) => {
 module.exports = {
   classCreate,
   updateClass,
-  getAllclass
+  getAllclass,
+  getALLclassdata
 
 };
 

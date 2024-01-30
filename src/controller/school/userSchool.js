@@ -1,6 +1,8 @@
 const school = require('../../model/schoolModel/userSchool');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const StudentSchema = require('../../model/studentModel/userStudent');
+const classSchema = require('../../model/classModel/userClass')
 const { createUserSchema, loginUserSchema } = require("../../validation/userValidation");
 
 
@@ -173,7 +175,6 @@ const getAllschool = async (req, res) => {
          error: error.message });
     }
 };
-
 
 
 

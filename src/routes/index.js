@@ -7,7 +7,7 @@ const userRouter4 = require('./teacherRoutes');
 const userRouter5 = require("./subjectRoutes");
 const router = express();
 
-router.use('/school', userRoutes);
+router.use('/school',userRoutes);
 router.use('/class', userRoutes1);
 router.use('/student',userRoutes2);
 router.use('/section',userRoutes3);

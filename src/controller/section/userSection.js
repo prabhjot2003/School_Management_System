@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const sectionSchema = require('../../model/sectionModel/userSection');
 const classSchema = require('../../model/classModel/userClass');
+const StudentSchema = require('../../model/studentModel/userStudent');
 const slugify = require('slugify');
 
 
@@ -124,20 +125,45 @@ const getAllsection = async (req, res) => {
 
 
 
+const getStudentSecton = async (req, res) => {
+  try {
+    const sectionId = req.params.id
+    const sectionvaild = await sectionSchema.findById({ "_id": sectionId });
+    if (!sectionvaild) {
+      return res.status(404).json({
+        status: false,
+        message: "Section not found"
+      })
+    }
+    const data = await StudentSchema.aggregate([
 
+      {
+        '$count': 'number of '
 
+      },
 
+    ]);
 
+    return res.status(200).json({
+      status: true,
+      data,
+    });
 
-
-
-
+  } catch (error) {
+    console.log("error:", error);
+    return res.status(500).json({
+      status: false,
+      message: 'Internal Server Error'
+    });
+  }
+}
 
 
 module.exports = {
   SectionCreate,
   updateSection,
-  getAllsection
+  getAllsection,
+  getStudentSecton
 
 };
 

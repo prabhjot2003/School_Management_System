@@ -141,12 +141,98 @@ const updateStudent = async (req, res) => {
   };
 
 
+  const   getALLStudentdata  = async (req, res) => {
+    try {
+      const schoolId = req.params.id
+      const schoolvalid = await school.findById({"_id" : schoolId});
+      if (!schoolvalid) {
+        return res.status(404).json({
+          status: false,
+          message: "school not found"
+        })
+      }
+      const data = await StudentSchema.aggregate([
+  
+        {
+          '$count': 'number'
+          
+        },
+  
+      ]);
+  
+      return res.status(200).json({
+        status: true,
+        data,
+      });
+  
+    } catch (error) {
+      console.log("error:", error);
+      return res.status(500).json({
+        status: false,
+        message: 'Internal Server Error'
+      });      
+    }
+  }
+
+
+  const  getclassStudent  = async (req, res) => {
+    try {
+      const classId = req.params.id
+      const classvalid  = await classSchema.findById({"_id" : classId});
+      if (!classvalid) {
+        return res.status(404).json({
+          status: false,
+          message: "Class not found"
+        })
+      }
+      const data = await StudentSchema.aggregate([
+  
+        {
+          '$count': 'number of '
+          
+        },
+  
+      ]);
+  
+      return res.status(200).json({
+        status: true,
+        data,
+      });
+  
+    } catch (error) {
+      console.log("error:", error);
+      return res.status(500).json({
+        status: false,
+        message: 'Internal Server Error'
+      });      
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 module.exports = {
     createStudent,
     updateStudent,
-    getAllstudent 
+    getAllstudent,
+    getALLStudentdata,
+    getclassStudent
 }
 
 

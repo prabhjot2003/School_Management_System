@@ -2,7 +2,6 @@ const subjectSchema = require('../../model/subjectModel/userSubject');
 const slugify = require('slugify');
 
 
-
 const createSubject = async (req, res) => {
     try {
         const { name } = req.body;
