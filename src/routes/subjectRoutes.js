@@ -5,4 +5,5 @@ const subjectRoutes = require('../controller/subject/userSubject');
 
 router.post("/createSubject",subjectRoutes.createSubject);
 
+
 module.exports = router;

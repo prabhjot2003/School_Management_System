@@ -7,6 +7,8 @@ const threelinking = require('../../model/linkingClassateachersubject/threedata'
 const classSchema = require('../../model/classModel/userClass')
 
 
+
+
 const createTeacher = async (req, res) => {
   try {
     const { firstName, lastName, email, schoolId } = req.body; // Corrected typo: "schooId" to "schoolId"
@@ -86,6 +88,7 @@ const Linking = async (req, res) => {
 const getTeacherandSubject = async (req, res) => {
   try {
     const teachId = req.params.id;
+    
    
     if (!teachId) {
       return res.status(404).json({
@@ -120,12 +123,12 @@ const getTeacherandSubject = async (req, res) => {
       }
     ]);
 
-    if (!data || data.length === 0) {
-      return res.status(404).json({
-        status: false,
-        message: "Teacher or associated subjects not found"
-      });
-    }
+    // if (!data || data.length === 0) {
+    //   return res.status(404).json({
+    //     status: false,
+    //     message: "Teacher or associated subjects not found"
+    //   });
+    // }
 
     return res.status(200).json({
       status: true,
@@ -245,23 +248,6 @@ const Linkingthree = async (req, res) => {
     });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

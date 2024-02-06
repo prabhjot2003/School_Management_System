@@ -17,20 +17,11 @@
 # Run commond for Projet 
 Two types of Run the Project Commond
 1. npm start .
-2. npx nodemon .
+
 
 # createSchool api hit the Url in Postman using this  Url and using the this field
 POST : http://localhost:8080/school/Create
-For Example : 
 
-    "name": " ",
-    "email": " ",
-    "password":" ",
-    "contact":" ",
-    "image": " ",
-    "establishedYear": " ",
-    "address" : " ",
-    "activeOn": " "
 
 
 # logicSchool api hit the url in postman using this Url using the this field

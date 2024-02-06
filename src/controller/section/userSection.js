@@ -60,45 +60,50 @@ const SectionCreate = async (req, res) => {
 
 const updateSection = async (req, res) => {
   try {
-    const updateSectionId = req.params.id;
+      const updateSchoolId = req.params.id;
+      const { name, address, email, password, contact, image, isActive } = req.body;
 
+      const schoolExists = await school.findById(updateSchoolId);
 
-    // Check if the post exists
-    const sectionExits = await sectionSchema.findById(updateSectionId);
+      if (!schoolExists) {
+          return res.status(404).json({
+              success: false,
+              message: 'School not found',
+              error: 'School with the provided ID does not exist'
+          });
+      }
 
-    if (!sectionExits) {
-      return res.status(404).json({
-        success: false,
-        message: 'Section not found',
-        error: 'Section with the provided ID does not exist'
+      const schoolWithEmail = await school.findOne({ email, _id: { $ne: updateSchoolId } });
+
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(req.body.password, salt);
+      req.body.password = passwordHash
+
+      //&& schoolWithEmail._id.toString() !== updateSchoolId
+      if (schoolWithEmail) {
+          return res.status(400).json({
+              success: false,
+              message: 'Email already registered with another school',
+          });
+      }
+
+      // Save the updated schoolss
+      const updatedSchool = await school.findByIdAndUpdate(updateSchoolId, req.body);
+
+      res.status(200).json({
+          success: true,
+          message: 'School updated successfully',
+          updatedSchool
       });
-    }
 
-    // Update post data
-    //   classExits.Name = req.body.Name;
-
-    sectionExits.Name = req.body.Name,
-      sectionExits.classId = req.body.classId,
-      sectionExits.slug = req.body.slug
-
-
-    // Save the updated post
-    const updatedPost = await sectionExits.save();
-
-    res.status(200).json({
-      success: true,
-      message: 'Section updated successfully',
-
-    });
   } catch (error) {
-    console.error('Error updating section:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
-      error: error.message
-    });
+      res.status(500).json({
+          success: false,
+          message: 'Internal Server Error',
+          error: error.message
+      });
   }
-};
+}
 
 
 

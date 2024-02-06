@@ -10,7 +10,7 @@ const middleware = require('../middleWare/verify');
 router.post('/createTeacher',teacherController.createTeacher);
 router.post('/createlinking',teacherController.Linking);
 
-router.get("/getteachersubject/:id", middleware,teacherController.getTeacherandSubject);
+router.get("/getteachersubject/:id", middleware, teacherController.getTeacherandSubject);
 router.post("/getdatathree",teacherController.Linkingthree);
 
 router.get("/getTecherClass/:id", middleware,teacherController.getTeacherandSubjectAandCLass)

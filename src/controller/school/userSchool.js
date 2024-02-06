@@ -8,6 +8,57 @@ const { createUserSchema, loginUserSchema } = require("../../validation/userVali
 
 
 
+// const createSchool = async (req, res) => {
+//     try {
+//         const { error } = createUserSchema.validate(req.body);
+
+//         if (error) {
+//             console.log(error.message);
+//             return res.status(400).json({
+//                 error: error.details.map((err) => err.message.replace(/"/g, '')),
+//             });
+//         }
+//         const { email } = req.body
+//         const userExists = await school.findOne({ $and: [{ 'email': email }, { "isActive": true }] });
+
+ 
+//         if (userExists) {
+//             return res.status(400).json({
+//                 status: false,
+//                 error: "Email should be unique",
+//             });
+//         }
+ 
+//         const salt = await bcrypt.genSalt(10);
+//         const passwordHash = await bcrypt.hash(req.body.password, salt);
+//         req.body.password = passwordHash
+//         const image = req.file.path
+//         req.body.image = image
+//         // Explicitly define the properties for better readability
+//         const schoolData = new school(
+//             req.body
+//         );
+
+
+
+        
+//         const savedSchool = await schoolData.save();
+
+//         res.status(200).json({
+//             status: true,
+//             data: savedSchool,
+//             message: "School created successfully",
+//         });
+//     } catch (err) {
+//         console.error("Error creating School:", err);
+//         res.status(500).json({
+//             status: false,
+//             error: "Internal server error",
+//         });
+//     }
+// };
+
+
 const createSchool = async (req, res) => {
     try {
         const { error } = createUserSchema.validate(req.body);
@@ -15,12 +66,13 @@ const createSchool = async (req, res) => {
         if (error) {
             console.log(error.message);
             return res.status(400).json({
+                status: false,
                 error: error.details.map((err) => err.message.replace(/"/g, '')),
             });
         }
 
-        const userExists = await school.findOne({ email: req.body.email });
-      
+        const { email, password } = req.body;
+        const userExists = await school.findOne({ email, isActive: true });
 
         if (userExists) {
             return res.status(400).json({
@@ -30,17 +82,13 @@ const createSchool = async (req, res) => {
         }
 
         const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(req.body.password, salt);
+        const passwordHash = await bcrypt.hash(password, salt);
 
-        // Explicitly define the properties for better readability
+        // Avoid modifying request body directly
         const schoolData = new school({
-            name: req.body.name,
-            address: req.body.address,
-            email: req.body.email,
+            ...req.body,
             password: passwordHash,
-            contact: req.body.contact,
-            image: req.body.image,
-            isActive: req.body.isActive,
+            image: req.file.path // Handle if req.file is not present
         });
 
         const savedSchool = await schoolData.save();
@@ -60,6 +108,13 @@ const createSchool = async (req, res) => {
 };
 
 
+
+
+
+
+
+
+
 const loginSchool = async (req, res) => {
     const { error } = loginUserSchema.validate(req.body);
 
@@ -76,8 +131,8 @@ const loginSchool = async (req, res) => {
 
         if (user) {
             const isPasswordValid = await bcrypt.compare(password, user.password);
-             const token = jwt.sign({ user_id: user?._id, email }, process.env.TOKEN_KEY, { expiresIn: '6h' }) //role
-                
+            const token = jwt.sign({ user_id: user?._id, email }, process.env.TOKEN_KEY, { expiresIn: '6h' }) //role
+
 
 
             return res.status(200).json({
@@ -88,7 +143,7 @@ const loginSchool = async (req, res) => {
             })
 
 
-           
+
 
 
 
@@ -111,70 +166,164 @@ const loginSchool = async (req, res) => {
 
 const updateSchool = async (req, res) => {
     try {
-      const updateSchoolId = req.params.id;
-    
-  
-      // Check if the post exists
-      const schoolExits = await school.findById(updateSchoolId);
-  
-      if (!schoolExits) {
-        return res.status(404).json({
-          success: false,
-          message: 'School not found',
-          error: 'School with the provided ID does not exist'
+        const updateSchoolId = req.params.id;
+        const { name, address, email, password, contact, image, isActive } = req.body;
+
+        const schoolExists = await school.findById(updateSchoolId);
+
+        if (!schoolExists) {
+            return res.status(404).json({
+                success: false,
+                message: 'School not found',
+                error: 'School with the provided ID does not exist'
+            });
+        }
+
+        const schoolWithEmail = await school.findOne({ email, _id: { $ne: updateSchoolId } });
+
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(req.body.password, salt);
+        req.body.password = passwordHash
+
+        //&& schoolWithEmail._id.toString() !== updateSchoolId
+        if (schoolWithEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already registered with another school',
+            });
+        }
+
+        // Save the updated schoolss
+        const updatedSchool = await school.findByIdAndUpdate(updateSchoolId, req.body);
+
+        res.status(200).json({
+            success: true,
+            message: 'School updated successfully',
+            updatedSchool
         });
-      }
-  
-      // Update post data
-    //   classExits.Name = req.body.Name;
 
-    schoolExits.name = req.body.name,
-    schoolExits.address = req.body.address,
-    schoolExits.email = req.body.email,
-    schoolExits.password = req.body.password,
-    schoolExits.contact = req.body.contact,
-    schoolExits.image = req.body.image,
-    schoolExits.isActive = req.body.isActive
-  
-      // Save the updated post
-      const updatedPost = await schoolExits.save();
-  
-      res.status(200).json({
-        success: true,
-        message: 'School updated successfully',
-       
-      });
     } catch (error) {
-      console.error('Error updating school:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal Server Error',
-        error: error.message
-      });
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
     }
-};
-  
+}
 
-// create getall api 
 
 const getAllschool = async (req, res) => {
     try {
-      
-      // Retrieve all posts
-      const schooldata = await school.find();
-  
-      res.status(200).json({ 
-        success: true, 
-        message: 'All School Retrieved Successfully', 
-        schooldata });
-    } 
+
+        // Retrieve all posts
+        const schooldata = await school.find();
+
+        res.status(200).json({
+            success: true,
+            message: 'All School Retrieved Successfully',
+            schooldata
+        });
+    }
     catch (error) {
-      res.status(500).json({ 
-        success: false,
-         message: 'Internal Server Error', 
-         error: error.message });
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message
+        });
     }
 };
+
+
+// const deleteSchool = async (req, res) => {
+//     const schoolId = req.params.id; // Accessing the id parameter correctly
+
+//     try {
+//         const schooled = await school.findById(schoolId); // Finding the school by its id
+
+//         if (!schooled) {
+//             return res.status(404).json({ message: 'School not found' });
+//         }
+
+//         // Mark the school as inactive (soft delete)
+//         schooled.isActive = false;
+//         schooled.isdelete = true;
+//         await schooled.save(); // Saving the updated school
+
+        
+
+//         res.json({
+//             message: 'School deleted successfully'
+//         });
+//     }
+//     catch (error) {
+//         console.log("error:", error);
+//         return res.status(500).json({
+//             status: false,
+//             message: 'Internal Server Error'
+//         });
+//     }
+// }
+
+
+
+
+const deleteSchool = async (req, res) => {
+    try {  
+      const schoolId = req.params.id
+      const validSchool = await school.findById({ '_id': schoolId })
+      if (validSchool) {
+        req.body.isActive = false
+        req.body.isDeleted = true
+        validSchool.set(req.body)
+        const save = await validSchool.save()
+        const linkedClass = classSchema.find({'schoolId': schoolId})
+       if(linkedClass){
+  
+        const delClass = await school.aggregate([
+          {
+            '$match': {
+              '_id': schoolId
+            }
+          },
+          {
+            '$lookup': {
+              'from': 'classes', 
+              'localField': '_id', 
+              'foreignField': 'schooId', 
+              'as': 'classes'
+            }
+          },
+          {
+            '$lookup': {
+              'from': 'sections', 
+              'localField': '_id', 
+              'foreignField': 'classId', 
+              'as': 'sections'
+            }
+          },
+        ])
+        
+        return res.status(200).json({ message: 'school and classes deleted successfully', delClass})
+  
+       }else{
+        return res.status(200).json({ message: 'school deleted successfully and has no classes linked'})
+      }
+      } else {
+        return res.status(400).json({ message: 'school does not exists' })
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'error while deleting school' })
+    }
+  }
+  
+
+
+
+
+
+
+
+
 
 
 
@@ -183,6 +332,7 @@ module.exports = {
     createSchool,
     loginSchool,
     updateSchool,
-    getAllschool
-    
-};
+    getAllschool,
+    deleteSchool
+
+}

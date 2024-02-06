@@ -13,7 +13,7 @@ const mySchema = new mongoose.Schema({
    
     name: {
         type: String,
-        required: true
+  
     },
     address: {
         type: String
@@ -21,9 +21,7 @@ const mySchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
     },
-
     password: {
         type: String,
         required: true
@@ -42,6 +40,10 @@ const mySchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true,
+    },
+    isDelete : {
+        type: Boolean,
+        default: false
     },
     createdAt
 

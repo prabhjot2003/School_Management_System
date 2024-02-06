@@ -28,6 +28,11 @@ const mySchema = new mongoose.Schema({
     type: String,
     slug: "Name"
   },
+  isDelete: {
+    type: Boolean,
+    default: false
+  },
+
   createdAt
 
 });

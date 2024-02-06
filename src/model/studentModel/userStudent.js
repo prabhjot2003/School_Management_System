@@ -64,7 +64,10 @@ const mySchema = new mongoose.Schema({
         type: String,
         ref: "section",
         required: true
-
+    },
+    isDelete : {
+        type: Boolean,
+        default: false
     },
     createdAt
 

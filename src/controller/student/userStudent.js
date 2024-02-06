@@ -212,21 +212,6 @@ const updateStudent = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = {
     createStudent,
     updateStudent,
